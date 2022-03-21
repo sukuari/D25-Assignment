@@ -1,139 +1,180 @@
 import re
-pattern = "^[a-z]+[\._]?[a-z 0-9]+[@]\w+[.]\w{2,3}$"
 
-
-def email_validation(Email):
-    if re.search(pattern, Email):
-        return 1
+def email_vali(email):
+    pattern="^[a-z]+[a-z 0-9]+[\._]?[a-z 0-9]+[@]\w+[.]\w{2,3}$"
+    if re.match(pattern, email):
+        return True
     else:
-        return 0
+        return False
 
-
-def password_valiadtion(flag, Password):
-
-    if not re.search('[a-z]', Password):
-        flag = 0
-    if not re.search('[0-9]', Password):
-        flag = 0
-    if not re.search('[A-Z]', Password):
-        flag = 0
-    if not re.search('[$@#!]', Password):
-        flag = 0
-    if (len(Password) < 5 or len(Password) > 16):
-        flag = 0
-    if flag == 1:
-        return 1
+def pword_vali(password):
+    if (len(password)>5 and len(password)<16):
+        flag=1
+    if not re.search('[A-Z]', password):
+        flag=0
+    if not re.search('[a-z]',password):
+        flag=0
+    if not re.search('[0-9]',password):
+        flag=0
+    if not re.search('[`~!@#$%^&*()_+-=<>?/{}[\]|]', password):
+        flag=0
+    if flag==1:
+        return True
     else:
-        return 0
-
-
-def login(email, password):
-    if(email_validation(email)):
-        file1 = open("sample.txt", "r")
-        flag = 0
-        index = 0
-        temp = 0
-        temp1 = 0
-        for line in file1:
-            index += 1
+        return False
+    
+   
+def forg_emailcheck(email):
+    m=[]
+    with open("assign.txt","r") as f:    
+        for line in f:
             if email in line:
-                flag = 1
-                temp = 1
-                break
-        if(temp == 0):
-            print("username doesnt exists")
-        if(flag == 1):
-            str = email+','+password
-            for line in file1:
-                index += 1
-                if str in line:
-                    print("Login Successfulll")
-                    temp1 = 1
-                    break
-            if(temp1 == 0):
-                print("invalid password")
-
-    else:
-        print("Entered username doesn't met the requirements,please enter a valid email")
-
-
-def registration(email, password):
-    if(email_validation(email)):
-        if(password_valiadtion(flag1, passwd)):
-            file1 = open("sample.txt", "r")
-            flag = 0
-            index = 0
-            for line in file1:
-                index += 1
-                if email in line:
-                    flag = 1
-                    break
-            if(flag == 0):
-                new_line = f"Username:{email},Password:{passwd}\n"
-                with open("sample.txt", "a") as a_file:
-                    # a_file.write("\n")
-                    a_file.write(new_line)
-                    file1.close()
-                    print("Your registration is Successfull")
+                m.append(1)
             else:
-                print("username already exist")
-        else:
-            print(
-                " Entered password doesn't met the requirements,please enter a valid password")
+                m.append(0)
+    if m.count(1)==1:
+        return True
     else:
-        print("Entered username doesn't met the requirements,please enter a valid email")
+        return False
+       
 
-
-def forgot_password(email):
-    if(email_validation(email)):
-        file1 = open("sample.txt", "r")
-        flag = 0
-        index = 0
-        temp = 0
-        for line in file1:
-            index += 1
-            if email in line:
-                print(line)
-                flag = 1
-                temp = 1
-                break
-        if(temp == 0):
-            print("username doesnt exists")
-        if(flag == 1):
-            print("The above password exist with the the entered username")
-            dec = input(
-                "Do you want to use the above password or want to set new password?[Y/N")
-            if(dec == 'Y' or dec == "y"):
+def forgot_passord(email):
+    if email_vali(email):
+        if forg_emailcheck(email)==True:
+            with open("assign.txt","r") as f:
+                for line in f:
+                    if email in line:
+                        if email==email:
+                            x=line.split()
+                            print("Your password is :",x[-1])
+                            reroute5=int(input("Enter your choice -->\n1.Log In\n2.Exit\n"))
+                            if reroute5==1:
+                                email=input("Enter your email : ")
+                                password=input("Enter your password : ")
+                                login(email, password)
+                            elif reroute5==2:
+                                print("Thank You")
+                            else:
+                                print("Invalid choice")
+                          
+        else:
+            print("Email is not registered")
+            reroute4=int(input("Enter your choice -->\n1.Try again\n2.Register\n3.Exit\n"))
+            if reroute4==1:
+                email=input("Enter your email : ")
+                forgot_passord(email)
+            elif reroute4==2:
+                email=input("Enter your email : ")
+                password=input("Enter your password : ")
+                registration(email,password)       
+            elif reroute4==3:
                 print("Thank You")
             else:
-                new_pass = input("Please enter new password")
-                if(password_valiadtion(flag1, new_pass)):
-                    new_line = f"Username:{email},Password:{new_pass}\n"
-                    with open("sample.txt", "a") as a_file:
-                        # a_file.write("\n")
-                        a_file.write(new_line)
-                        file1.close()
-                        print("New Password Created successfully")
-                else:
-                    print("password doesn't met the requirements,please enter a valid password")
+                print("Invalid choice")
+            return email
+            return password     
+         
     else:
-        print("username doesn't met the requiremets please enter a valid mail id")
+        print("Your email id is wrong")
 
 
-if __name__ == '__main__':
-    flag1 = 1
-    user_input = int(
-        input("Enter Your choice\n1.Registration\n2.Login\n3.forgot password\n"))
-    if(user_input == 1):
-        email = input("Enter ur email id\n")
-        passwd = input("Enter ur password\n")
-        registration(email, passwd)
-    elif(user_input == 2):
-        email = input("Enter ur email id\n")
-        passwd = input("Enter ur password\n")
-        login(email, passwd)
-    elif(user_input == 3):
-        email = input("please enter the mail id\n")
-        forgot_password(email)
+
+def login(email,password):
+    if (email_vali(email)) and (pword_vali(password)):
+        with open("assign.txt","r") as f:
+            for line in f:
+                if email in line:
+                    if password in line:
+                        print("Logged in successfully")
+                        break
+                    else:
+                        print("Email or Password is incorrect")
+                        reroute3=int(input("Enter your choice -->\n1.Try again\n2.Register\n3.Exit\n"))
+                        if reroute3==1:
+                            email=input("Enter your email : ")
+                            password=input("Enter your password : ")
+                            login(email, password)
+                        elif reroute3==2:
+                            email=input("Enter your email : ")
+                            password=input("Enter your password : ")
+                            registration(email,password)       
+                        elif reroute3==3:
+                            print("Thank You")
+                        else:
+                            print("Invalid choice")
+                        return email
+                        return password
+    else:
+        print("Oops! Email or password is not valid")                    
+                        
+
+def registration(email,password):
+    def check_email(email):
+        with open("assign.txt","r") as f:
+            for line in f:
+                if not email in line:
+                    return True
+                    break
+                else:
+                    return False   
+    if check_email(email):           
+        if (email_vali(email)) and (pword_vali(password)):
+            with open("assign.txt","a") as f:
+                f.write("Email = " +email +" Password = " + password +"\n")
+                print("Registered Successfully")
+                reroute2=int(input("Enter your choice -->\n1.Log In\n2.Exit\n"))
+                if reroute2==1:
+                    email=input("Enter your email : ")
+                    password=input("Enter your password : ")
+                    login(email,password)
+                elif reroute2==2:
+                    print("Thank you for Registering")
+                else:
+                    print("Invalid choice")
+                    return email
+                    return password                  
+        else:
+            print("Invalid Email or password")
+            reroute0=int(input("Enter your choice --->\n1.Try again \n2.Exit\n"))
+            if reroute0==1:
+                email=input("Enter your email : ")
+                password=input("Enter your password : ")
+                registration(email, password)
+            elif reroute0==2:
+                print("Thank You")
+            else:
+                print("Invalid choice")
+            return email
+            return password  
+    else:
+        print("Already registered")
+        reroute1=int(input("Enter your choice -->\n1.Log In \n2.Forgot password \n3.Exit\n"))
+        if reroute1==1:
+            email=input("Enter your email : ")
+            password=input("Enter your password : ")
+            login(email,password)
+        elif reroute1==2:
+            email=input("Enter your email : ")
+            forgot_passord(email)
+        elif reroute1==3:
+            print("Thank You")
+        else:
+            print("Invalid choice")
+        return email
+        return password 
+        
+if __name__=='__main__':
+    user=int(input("Enter your choice-->\n1.log In\n2.Registration\n3.Forgot password\n"))
+    if user==1:
+        email=input("Enter your email : ")
+        password=input("Enter your password : ")
+        login(email,password)
+    elif user==2:
+        email=input("Enter your email : ")
+        password=input("Enter your password : ")
+        registration(email, password)
+    elif user==3:
+        email=input("Enter your email : ")
+        forgot_passord(email)
     else:
         print("invalid choice")
